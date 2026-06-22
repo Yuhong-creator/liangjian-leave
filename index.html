@@ -9,7 +9,10 @@
 body{font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;background:#f1f5f9;color:#1e293b;min-height:100vh}
 header{background:linear-gradient(135deg,#1e3a5f,#2563eb);color:#fff;padding:12px 20px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:6px}
 header h1{font-size:17px;font-weight:700}
-header .r{font-size:11px;background:rgba(255,255,255,.15);padding:3px 12px;border-radius:20px;display:flex;gap:10px}
+header .r{font-size:11px;background:rgba(255,255,255,.15);padding:3px 12px;border-radius:20px;display:flex;gap:10px;align-items:center}
+header .r .tag{padding:1px 6px;border-radius:4px;font-size:10px}
+header .r .tag.sg{background:#fef3c7;color:#92400e}
+header .r .tag.sx{background:#dbeafe;color:#1e40af}
 .main{padding:12px 16px;max-width:1400px;margin:0 auto}
 .n{display:flex;align-items:center;justify-content:center;gap:14px;margin-bottom:10px}
 .n button{width:28px;height:28px;border-radius:6px;border:1px solid #e2e8f0;background:#fff;font-size:13px;cursor:pointer}
@@ -31,6 +34,7 @@ td.o{background:#fafafa}
 .nw{display:flex;flex-wrap:wrap;gap:1px}
 .nt{font-size:10px;padding:0 4px;border-radius:3px;color:#fff;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;line-height:1.7}
 .nt.s{background:transparent!important;color:#64748b;font-weight:700}
+.nt .mtag{font-size:8px;margin-left:1px;opacity:.8}
 .cb{position:absolute;bottom:2px;right:2px;font-size:9px;font-weight:700;color:#94a3b8;background:#f1f5f9;border-radius:3px;padding:0 4px}
 .cb.f{background:#fef3c7;color:#d97706}
 .ad{position:absolute;top:2px;right:2px;width:4px;height:4px;border-radius:50%}
@@ -39,7 +43,7 @@ td.o{background:#fafafa}
 .bp{flex:1;min-width:260px;background:#fff;border-radius:8px;box-shadow:0 1px 3px rgba(0,0,0,.06);padding:10px 12px}
 .pt{font-size:12px;font-weight:600;color:#475569;margin-bottom:6px;display:flex;align-items:center;gap:4px}
 .pb{display:flex;flex-wrap:wrap;gap:4px}
-.pc{display:inline-flex;align-items:center;gap:4px;padding:4px 8px;border-radius:16px;cursor:pointer;border:2px solid transparent;background:#f8fafc;font-size:12px}
+.pc{display:inline-flex;align-items:center;gap:4px;padding:4px 8px;border-radius:16px;cursor:pointer;border:2px solid transparent;background:#f8fafc;font-size:12px;position:relative}
 .pc:hover{background:#f1f5f9}
 .pc.ac{border-color:var(--c);background:#eff6ff;font-weight:600}
 .pc .d{width:8px;height:8px;border-radius:50%}
@@ -47,6 +51,9 @@ td.o{background:#fafafa}
 .pc .l{font-size:9px;color:#94a3b8}
 .pc .x{font-size:11px;color:#cbd5e1;cursor:pointer;padding:0 2px}
 .pc .x:hover{color:#ef4444}
+.pc .ptag{font-size:8px;padding:0 4px;border-radius:3px;margin-left:2px;font-weight:600}
+.pc .ptag.sg{background:#fef3c7;color:#92400e}
+.pc .ptag.sx{background:#dbeafe;color:#1e40af}
 .eb{color:#94a3b8;font-size:12px;padding:4px 0}
 .ch{display:flex;align-items:center;gap:4px;cursor:pointer;color:#475569;font-size:12px;font-weight:600;margin-bottom:6px}
 .ch:hover{color:#2563eb}
@@ -54,9 +61,17 @@ td.o{background:#fafafa}
 .ch .ar.on{transform:rotate(90deg)}
 .c2{display:none;padding-top:6px}
 .c2.on{display:block}
-.a2{display:flex;gap:6px}
+.a2{display:flex;gap:6px;margin-bottom:6px}
 .a2 input{flex:1;padding:6px 10px;border:1px solid #e2e8f0;border-radius:6px;font-size:13px;outline:none}
 .a2 input:focus{border-color:#2563eb}
+.tp{display:flex;gap:6px}
+.tp label{flex:1;padding:5px;border-radius:6px;border:2px solid #e2e8f0;cursor:pointer;text-align:center;font-size:12px;font-weight:600;transition:all .12s}
+.tp label:hover{border-color:#94a3b8}
+.tp label.sg{color:#92400e}
+.tp label.sx{color:#1e40af}
+.tp label.sg.sel{border-color:#f59e0b;background:#fffbeb}
+.tp label.sx.sel{border-color:#3b82f6;background:#eff6ff}
+.tp label input{display:none}
 .a2 button{padding:6px 16px;background:#2563eb;color:#fff;border:none;border-radius:6px;font-size:13px;cursor:pointer}
 .a2 button:hover{background:#1d4ed8}
 @media(max-width:768px){.main{padding:8px}.bp{min-width:auto}}
@@ -65,7 +80,12 @@ td.o{background:#fafafa}
 <body>
 <header>
   <h1>亮剑组 · 调休安排表</h1>
-  <div class="r"><span>周一禁休</span><span>上限3人</span></div>
+  <div class="r">
+    <span>周一禁休</span>
+    <span>单休限3人</span>
+    <span class="tag sg">单休</span>
+    <span class="tag sx">双休</span>
+  </div>
 </header>
 <div class="main">
   <div class="n">
@@ -73,7 +93,7 @@ td.o{background:#fafafa}
     <div class="t"><span id="mt"></span><button class="tb" onclick="gt()">今天</button></div>
     <button onclick="gm(1)">▶</button>
   </div>
-  <div class="h" id="h">展开「+ 添加成员」录入</div>
+  <div class="h" id="h">展开「添加成员」录入</div>
   <div class="cw"><table><thead><tr>
     <th class="m">一<small>禁休</small></th><th>二</th><th>三</th><th>四</th><th>五</th><th class="w">六</th><th class="w">日</th>
   </tr></thead><tbody id="cb"></tbody></table></div>
@@ -89,6 +109,10 @@ td.o{background:#fafafa}
           <input type="text" id="pi" placeholder="输入姓名" maxlength="20" onkeydown="if(event.key=='Enter')ap()">
           <button onclick="ap()">添加</button>
         </div>
+        <div class="tp">
+          <label class="sg" id="lbsg" onclick="st('sg')"><input type="radio" name="t" value="sg" checked> 单休</label>
+          <label class="sx" id="lbsx" onclick="st('sx')"><input type="radio" name="t" value="sx"> 双休</label>
+        </div>
       </div>
     </div>
   </div>
@@ -97,9 +121,9 @@ td.o{background:#fafafa}
 var C=['#2563eb','#dc2626','#059669','#d97706','#7c3aed','#db2777','#0891b2','#ca8a04','#4f46e5','#c026d3','#0d9488','#b45309','#1d4ed8','#e11d48','#047857','#a16207','#9333ea','#0284c7','#65a30d','#0f766e'];
 var K='liangjian_leave';
 var d={people:[],year:(new Date()).getFullYear(),month:(new Date()).getMonth()};
-var a=null,co=false;
+var a=null,co=false,nt='sg';
 
-function ld(){try{var r=localStorage.getItem(K);if(r){var x=JSON.parse(r);if(x&&x.people){for(var i=0;i<x.people.length;i++)if(!x.people[i].leave)x.people[i].leave=[];d=x}}}catch(e){}}
+function ld(){try{var r=localStorage.getItem(K);if(r){var x=JSON.parse(r);if(x&&x.people){for(var i=0;i<x.people.length;i++){if(!x.people[i].leave)x.people[i].leave=[];if(!x.people[i].type)x.people[i].type='sg'}d=x}}}catch(e){}}
 function sv(){try{localStorage.setItem(K,JSON.stringify({people:d.people,year:d.year,month:d.month}))}catch(e){}}
 function gi(){return'p'+Date.now()+Math.random().toString(36).slice(2,6)}
 function es(s){var e=document.createElement('div');e.textContent=s;return e.innerHTML}
@@ -109,13 +133,15 @@ function ip(y,m,d2){var t=new Date();t.setHours(0,0,0,0);return new Date(y,m,d2)
 function dm(y,m){return new Date(y,m+1,0).getDate()}
 function gp(id){for(var i=0;i<d.people.length;i++)if(d.people[i].id===id)return d.people[i];return null}
 function ga(){return gp(a)}
+function cod(ds){var n=0;for(var i=0;i<d.people.length;i++){var p=d.people[i];if(p.leave&&p.leave.includes(ds)&&p.type==='sg')n++}return n}
 function pod(ds){var r=[];for(var i=0;i<d.people.length;i++){var p=d.people[i];if(p.leave)for(var j=0;j<p.leave.length;j++)if(p.leave[j]===ds){r.push(p);break}}return r}
-function cod(ds){return pod(ds).length}
+function cntAll(ds){var n=0;for(var i=0;i<d.people.length;i++){var p=d.people[i];if(p.leave&&p.leave.includes(ds))n++}return n}
 
+function st(v){nt=v;document.getElementById('lbsg').className='sg'+(v==='sg'?' sel':'');document.getElementById('lbsx').className='sx'+(v==='sx'?' sel':'')}
 function ap(){
   var n=(document.getElementById('pi').value||'').trim();
   if(!n||d.people.length>=50)return;
-  d.people.push({id:gi(),name:n,color:C[d.people.length%C.length],leave:[]});
+  d.people.push({id:gi(),name:n,color:C[d.people.length%C.length],leave:[],type:nt});
   a=d.people[d.people.length-1].id;sv();r();
   document.getElementById('pi').value='';
   co=false;document.getElementById('ab').className='c2';document.getElementById('ar').className='ar';
@@ -140,6 +166,7 @@ function gm(n){
 }
 function gt(){var t=new Date();d.year=t.getFullYear();d.month=t.getMonth();sv();r()}
 
+function tname(v){return v==='sx'?'双休':'单休'}
 function r(){
   var p=d.people||[];document.getElementById('pc').textContent=p.length+' 人';
   var bar=document.getElementById('bar');
@@ -147,10 +174,11 @@ function r(){
   else{
     var h='';
     for(var i=0;i<p.length;i++){
-      var q=p[i];var ac=q.id===a?' ac':'';
+      var q=p[i];var ac=q.id===a?' ac':'';var tp=q.type||'sg';
       h+='<div class="pc'+ac+'" style="--c:'+q.color+'" onclick="sp(\''+q.id+'\')">';
       h+='<span class="d" style="background:'+q.color+'"></span>';
       h+='<span class="n">'+es(q.name)+'</span>';
+      h+='<span class="ptag '+tp+'">'+(tp==='sx'?'双休':'单休')+'</span>';
       h+='<span class="l">'+(q.leave?q.leave.length:0)+'</span>';
       h+='<span class="x" onclick="event.stopPropagation();rp(\''+q.id+'\')">✕</span></div>';
     }
@@ -164,13 +192,16 @@ function r(){
     for(var c2=0;c2<7;c2++){
       var d2=r2*7+c2-sc+1;
       if(d2<1||d2>days){cht+='<td class="o"><div class="c"><div class="dt"> </div></div></td>';continue}
-      var str=ds(y,m,d2),mon=im(y,m,d2),pas=ip(y,m,d2),ac=ga(),ols=pod(str),cnt=ols.length;
+      var str=ds(y,m,d2),mon=im(y,m,d2),pas=ip(y,m,d2),ac=ga(),ols=pod(str),sCnt=cod(str),allCnt=cntAll(str);
       var me=false;if(ac&&ac.leave)for(var k=0;k<ac.leave.length;k++)if(ac.leave[k]===str){me=true;break}
       var cl='c';if(mon||pas)cl+=' di';else if(ac)cl+=' cl';
       var nh='';
-      for(var k=0;k<ols.length&&k<3;k++)nh+='<span class="nt" style="background:'+ols[k].color+'">'+es(ols[k].name)+'</span>';
-      if(ols.length>3)nh+='<span class="nt s">+'+(ols.length-3)+'</span>';
-      var b2=mon?'':'<span class="cb'+(cnt>=3?' f':'')+'">'+cnt+'/3</span>';
+      for(var k=0;k<ols.length&&k<4;k++){
+        var op=ols[k];var ot=op.type||'sg';
+        nh+='<span class="nt" style="background:'+op.color+'">'+es(op.name)+'<span class="mtag">('+(ot==='sx'?'双':'单')+')</span></span>';
+      }
+      if(ols.length>4)nh+='<span class="nt s">+'+(ols.length-4)+'</span>';
+      var b2=mon?'':'<span class="cb'+(sCnt>=3?' f':'')+'">'+sCnt+'/3</span>';
       var d3=me?'<div class="ad" style="background:'+ac.color+'"></div>':'';
       var mt2=mon?'<div class="mt">🚫 禁休</div>':'';
       cht+='<td onclick="cd(\''+str+'\')"><div class="'+cl+'"><div class="dt">'+d2+'</div>'+mt2+'<div class="nw">'+nh+'</div>'+b2+d3+'</div></td>';
@@ -179,7 +210,7 @@ function r(){
   }
   document.getElementById('cb').innerHTML=cht;
   var ac2=ga();
-  if(ac2)document.getElementById('h').innerHTML='当前：<strong>'+es(ac2.name)+'</strong> — 点击日期安排/取消（已休'+(ac2.leave?ac2.leave.length:0)+'天）';
+  if(ac2)document.getElementById('h').innerHTML='当前：<strong>'+es(ac2.name)+'</strong>（'+tname(ac2.type||'sg')+'）— 点击日期安排/取消（已休'+(ac2.leave?ac2.leave.length:0)+'天）';
   else if(p.length)document.getElementById('h').innerHTML='请点击下方成员选中';
   else document.getElementById('h').innerHTML='展开「添加成员」录入';
 }
@@ -189,7 +220,7 @@ function cd(str){
   var p2=str.split('-').map(Number);
   if(im(p2[0],p2[1]-1,p2[2])||ip(p2[0],p2[1]-1,p2[2]))return;
   var me=false;if(ac.leave)for(var k=0;k<ac.leave.length;k++)if(ac.leave[k]===str){me=true;break}
-  if(!me&&cod(str)>=3)return;
+  if(!me&&(ac.type||'sg')==='sg'&&cod(str)>=3)return;
   tl(ac.id,str);
 }
 document.onkeydown=function(e){

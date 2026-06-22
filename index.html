@@ -203,12 +203,24 @@ header .share-bar button:hover{background:rgba(255,255,255,.35)}
   function loadData(){
     try{
       var raw=localStorage.getItem(KEY);
-      if(raw){var d=JSON.parse(raw);if(d.people){for(var p of d.people)if(!p.leave)p.leave=[];return d}}
+      if(raw){
+        var d=JSON.parse(raw);
+        if(d.people){
+          for(var p=0;p<d.people.length;p++)if(!d.people[p].leave)d.people[p].leave=[];
+          return d;
+        }
+      }
     }catch(e){}
-    return {people:[],year:2026,month:5};
+    return {people:[],year:(new Date()).getFullYear(),month:(new Date()).getMonth()};
   }
   function saveData(){
-    try{localStorage.setItem(KEY,JSON.stringify({people:data.people,year:data.year,month:data.month}))}catch(e){}
+    try{
+      localStorage.setItem(KEY,JSON.stringify({people:data.people,year:data.year,month:data.month}));
+      return true;
+    }catch(e){
+      console.warn('保存失败:',e);
+      return false;
+    }
   }
 
   // ===== 操作 =====
@@ -389,8 +401,10 @@ header .share-bar button:hover{background:rgba(255,255,255,.35)}
   // ===== 事件 =====
   dom.addBtn.onclick=function(){addPerson(dom.personInput.value)};
   dom.personInput.onkeydown=function(e){if(e.key==='Enter')addPerson(dom.personInput.value)};
-  var co=false;
-  dom.collapseToggle.onclick=function(){co=!co;dom.collapseBody.className='collapse-body'+(co?' open':'');dom.collapseArrow.className='arrow'+(co?' open':'')};
+  // 没有成员时默认展开添加区域
+  var collapseOpen = data.people.length === 0;
+  if(collapseOpen){dom.collapseBody.className='collapse-body open';dom.collapseArrow.className='arrow open';}
+  dom.collapseToggle.onclick=function(){collapseOpen=!collapseOpen;dom.collapseBody.className='collapse-body'+(collapseOpen?' open':'');dom.collapseArrow.className='arrow'+(collapseOpen?' open':'')};
   dom.prevBtn.onclick=function(){var y=data.year,m=data.month-1;if(m<0){m=11;y--}data.year=y;data.month=m;saveData();render()};
   dom.nextBtn.onclick=function(){var y=data.year,m=data.month+1;if(m>11){m=0;y++}data.year=y;data.month=m;saveData();render()};
   dom.todayBtn.onclick=function(){var t=new Date();data.year=t.getFullYear();data.month=t.getMonth();saveData();render()};

@@ -7,415 +7,296 @@
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;background:#f1f5f9;color:#1e293b;min-height:100vh}
-header{background:linear-gradient(135deg,#1e3a5f,#2563eb);color:#fff;padding:14px 24px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px}
-header h1{font-size:18px;font-weight:700}
-header .rules{font-size:12px;background:rgba(255,255,255,.15);padding:4px 14px;border-radius:20px;display:flex;gap:12px}
-header .share-bar{display:flex;gap:6px}
-header .share-bar button{font-size:11px;padding:4px 10px;border:none;border-radius:6px;cursor:pointer;background:rgba(255,255,255,.2);color:#fff;font-weight:500}
-header .share-bar button:hover{background:rgba(255,255,255,.35)}
-.main{padding:16px 20px;max-width:1400px;margin:0 auto}
-.month-nav{display:flex;align-items:center;justify-content:center;gap:16px;margin-bottom:12px}
-.month-nav button{width:30px;height:30px;border-radius:8px;border:1.5px solid #e2e8f0;background:#fff;font-size:14px;cursor:pointer}
-.month-nav button:hover{border-color:#2563eb}
-.month-nav .month-title{font-size:17px;font-weight:700;min-width:150px;text-align:center}
-.month-nav .month-title .today-btn{font-size:11px;color:#2563eb;cursor:pointer;margin-left:6px;padding:2px 8px;border-radius:4px;background:#eff6ff;border:none}
-.calendar-hint{text-align:center;font-size:13px;color:#64748b;margin-bottom:10px;padding:5px;background:#f8fafc;border-radius:8px;min-height:28px}
-.calendar-wrap{background:#fff;border-radius:10px;box-shadow:0 1px 4px rgba(0,0,0,.08);padding:14px;overflow-x:auto}
-.calendar-table{width:100%;border-collapse:collapse;table-layout:fixed;min-width:540px}
-.calendar-table th{padding:5px 4px;font-size:12px;font-weight:600;color:#64748b;text-align:center;border-bottom:2px solid #e2e8f0}
-.calendar-table th.monday{color:#ef4444}
-.calendar-table th.monday small{display:block;font-weight:400;font-size:10px;color:#fca5a5}
-.calendar-table th.weekend{color:#10b981}
-.calendar-table td{border:1px solid #f1f5f9;vertical-align:top;padding:0;position:relative;height:76px;cursor:default}
-.day-cell{padding:3px 5px;height:100%;position:relative}
-.day-cell.clickable{cursor:pointer}
-.day-cell.clickable:hover{background:#eff6ff}
-.day-cell.monday,.day-cell.past{background:#f8fafc;cursor:not-allowed;opacity:.55}
-.date-num{font-size:12px;font-weight:600;color:#334155;margin-bottom:1px}
-.names-wrap{display:flex;flex-wrap:wrap;gap:1.5px}
-.name-tag{font-size:11px;padding:1px 6px;border-radius:4px;color:#fff;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;line-height:1.8}
-.name-tag.overflow{background:transparent!important;color:#64748b;font-weight:700}
-.count-badge{position:absolute;bottom:2px;right:3px;font-size:10px;font-weight:700;color:#94a3b8;background:#f1f5f9;border-radius:4px;padding:0 5px}
-.count-badge.full{background:#fef3c7;color:#d97706}
-.active-dot{position:absolute;top:2px;right:3px;width:5px;height:5px;border-radius:50%}
-.monday-badge{color:#ef4444;font-size:11px;font-weight:600;padding-top:4px;text-align:center}
-.footer{margin-top:12px;display:flex;flex-wrap:wrap;gap:12px}
-.bottom-panel{flex:1;min-width:280px;background:#fff;border-radius:10px;box-shadow:0 1px 4px rgba(0,0,0,.08);padding:12px 14px}
-.people-bar-title{font-size:13px;font-weight:600;color:#475569;margin-bottom:8px;display:flex;align-items:center;gap:6px}
-.people-count{font-weight:400;color:#94a3b8;font-size:12px}
-.people-bar{display:flex;flex-wrap:wrap;gap:5px}
-.person-chip{display:inline-flex;align-items:center;gap:5px;padding:5px 10px;border-radius:20px;cursor:pointer;border:2px solid transparent;background:#f8fafc;font-size:13px;user-select:none}
-.person-chip:hover{background:#f1f5f9}
-.person-chip.active{border-color:var(--pc);background:#eff6ff;font-weight:600}
-.person-chip .cd{width:9px;height:9px;border-radius:50%;flex-shrink:0}
-.person-chip .cn{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:80px}
-.person-chip .cdays{font-size:10px;color:#94a3b8}
-.person-chip .cdel{font-size:12px;color:#cbd5e1;cursor:pointer;padding:0 2px}
-.person-chip .cdel:hover{color:#ef4444;background:#fef2f2}
-.empty-bar{color:#94a3b8;font-size:13px;padding:6px 0}
-.collapse-header{display:flex;align-items:center;gap:6px;cursor:pointer;user-select:none;color:#475569;font-size:13px;font-weight:600}
-.collapse-header:hover{color:#2563eb}
-.collapse-header .arrow{transition:transform .2s;font-size:10px;display:inline-block}
-.collapse-header .arrow.open{transform:rotate(90deg)}
-.collapse-body{padding-top:8px;display:none}
-.collapse-body.open{display:block}
-.add-row{display:flex;gap:8px}
-.add-row input{flex:1;padding:7px 12px;border:1.5px solid #e2e8f0;border-radius:8px;font-size:14px;outline:none}
-.add-row input:focus{border-color:#2563eb}
-.add-row button{padding:7px 18px;background:#2563eb;color:#fff;border:none;border-radius:8px;font-size:14px;cursor:pointer;font-weight:600}
-.add-row button:hover{background:#1d4ed8}
-.tooltip{position:fixed;z-index:999;background:#1e293b;color:#fff;padding:5px 10px;border-radius:6px;font-size:12px;pointer-events:none;white-space:nowrap;box-shadow:0 4px 12px rgba(0,0,0,.2);display:none}
-.toast{position:fixed;bottom:30px;left:50%;transform:translateX(-50%);background:#1e293b;color:#fff;padding:10px 20px;border-radius:8px;font-size:13px;z-index:9999;display:none;box-shadow:0 4px 12px rgba(0,0,0,.3)}
-.share-dialog{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:9998;display:none;align-items:center;justify-content:center}
-.share-dialog.open{display:flex}
-.share-box{background:#fff;border-radius:14px;padding:24px;width:440px;max-width:92vw;box-shadow:0 20px 60px rgba(0,0,0,.2)}
-.share-box h3{font-size:16px;margin-bottom:4px}
-.share-box p{font-size:13px;color:#64748b;margin-bottom:14px}
-.share-box textarea{width:100%;height:120px;padding:10px;border:1.5px solid #e2e8f0;border-radius:8px;font-size:12px;resize:vertical;outline:none}
-.share-box textarea:focus{border-color:#2563eb}
-.share-box .btns{display:flex;gap:8px;margin-top:10px}
-.share-box .btns button{flex:1;padding:8px;border:none;border-radius:8px;font-size:13px;cursor:pointer;font-weight:600}
-.share-box .btns .primary{background:#2563eb;color:#fff}
-.share-box .btns .primary:hover{background:#1d4ed8}
-.share-box .btns .secondary{background:#f1f5f9;color:#475569}
-.share-box .btns .secondary:hover{background:#e2e8f0}
-@media(max-width:768px){.main{padding:10px}.month-nav .month-title{font-size:15px;min-width:auto}.bottom-panel{min-width:auto}header h1{font-size:15px}.share-bar button{font-size:10px!important;padding:3px 6px!important}}
+header{background:linear-gradient(135deg,#1e3a5f,#2563eb);color:#fff;padding:12px 20px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:6px}
+header h1{font-size:17px;font-weight:700}
+header .info{font-size:11px;background:rgba(255,255,255,.15);padding:3px 12px;border-radius:20px;display:flex;gap:10px}
+header .btns{display:flex;gap:4px}
+header .btns button{font-size:11px;padding:3px 8px;border:none;border-radius:5px;cursor:pointer;background:rgba(255,255,255,.2);color:#fff}
+header .btns button:hover{background:rgba(255,255,255,.35)}
+.main{padding:12px 16px;max-width:1400px;margin:0 auto}
+.nav{display:flex;align-items:center;justify-content:center;gap:14px;margin-bottom:10px}
+.nav button{width:28px;height:28px;border-radius:6px;border:1px solid #e2e8f0;background:#fff;font-size:13px;cursor:pointer}
+.nav button:hover{border-color:#2563eb;color:#2563eb}
+.nav .title{font-size:16px;font-weight:700;min-width:140px;text-align:center}
+.nav .title .tbtn{font-size:10px;color:#2563eb;cursor:pointer;margin-left:5px;padding:1px 6px;border-radius:3px;background:#eff6ff;border:none}
+.hint{text-align:center;font-size:12px;color:#64748b;margin-bottom:8px;padding:4px;background:#f8fafc;border-radius:6px;min-height:24px}
+.cal{background:#fff;border-radius:8px;box-shadow:0 1px 3px rgba(0,0,0,.06);padding:10px;overflow-x:auto}
+table{width:100%;border-collapse:collapse;table-layout:fixed;min-width:520px}
+th{padding:4px;font-size:11px;font-weight:600;color:#64748b;text-align:center;border-bottom:2px solid #e2e8f0}
+th.mon{color:#ef4444}
+th.mon small{display:block;font-weight:400;font-size:9px;color:#fca5a5}
+th.wk{color:#10b981}
+td{border:1px solid #f1f5f9;vertical-align:top;padding:0;position:relative;height:70px}
+td.om{background:#fafafa}
+.cell{padding:2px 4px;height:100%;position:relative;cursor:default}
+.cell.ok{cursor:pointer}
+.cell.ok:hover{background:#eff6ff}
+.cell.dis{background:#f8fafc;cursor:not-allowed;opacity:.5}
+.dt{font-size:11px;font-weight:600;color:#334155;margin-bottom:1px}
+.nw{display:flex;flex-wrap:wrap;gap:1px}
+.nt{font-size:10px;padding:0 4px;border-radius:3px;color:#fff;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;line-height:1.7}
+.cb{position:absolute;bottom:2px;right:2px;font-size:9px;font-weight:700;color:#94a3b8;background:#f1f5f9;border-radius:3px;padding:0 4px}
+.cb.f{background:#fef3c7;color:#d97706}
+.ad{position:absolute;top:2px;right:2px;width:4px;height:4px;border-radius:50%}
+.mt{color:#ef4444;font-size:10px;font-weight:600;padding-top:3px;text-align:center}
+.ft{margin-top:10px;display:flex;flex-wrap:wrap;gap:10px}
+.bp{flex:1;min-width:260px;background:#fff;border-radius:8px;box-shadow:0 1px 3px rgba(0,0,0,.06);padding:10px 12px}
+.pt{font-size:12px;font-weight:600;color:#475569;margin-bottom:6px;display:flex;align-items:center;gap:4px}
+.pb{display:flex;flex-wrap:wrap;gap:4px}
+.pc{display:inline-flex;align-items:center;gap:4px;padding:4px 8px;border-radius:16px;cursor:pointer;border:2px solid transparent;background:#f8fafc;font-size:12px}
+.pc:hover{background:#f1f5f9}
+.pc.act{border-color:var(--c);background:#eff6ff;font-weight:600}
+.pc .d{width:8px;height:8px;border-radius:50%}
+.pc .n{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:70px}
+.pc .l{font-size:9px;color:#94a3b8}
+.pc .x{font-size:11px;color:#cbd5e1;cursor:pointer;padding:0 2px}
+.pc .x:hover{color:#ef4444}
+.eb{color:#94a3b8;font-size:12px;padding:4px 0}
+.ch{display:flex;align-items:center;gap:4px;cursor:pointer;color:#475569;font-size:12px;font-weight:600;margin-bottom:6px}
+.ch:hover{color:#2563eb}
+.ch .ar{transition:transform .2s;font-size:9px}
+.ch .ar.op{transform:rotate(90deg)}
+.cb2{display:none;padding-top:6px}
+.cb2.op{display:block}
+.ar2{display:flex;gap:6px}
+.ar2 input{flex:1;padding:6px 10px;border:1px solid #e2e8f0;border-radius:6px;font-size:13px;outline:none}
+.ar2 input:focus{border-color:#2563eb}
+.ar2 button{padding:6px 16px;background:#2563eb;color:#fff;border:none;border-radius:6px;font-size:13px;cursor:pointer}
+.ar2 button:hover{background:#1d4ed8}
+.tip{position:fixed;z-index:999;background:#1e293b;color:#fff;padding:4px 8px;border-radius:5px;font-size:11px;pointer-events:none;white-space:nowrap;box-shadow:0 3px 10px rgba(0,0,0,.2);display:none}
+@media(max-width:768px){.main{padding:8px}.bp{min-width:auto}header h1{font-size:14px}}
+@media print{header{-webkit-print-color-adjust:exact;print-color-adjust:exact}.nav button,.hint,.ft{display:none!important}}
 </style>
 </head>
 <body>
 
 <header>
   <h1>亮剑组 · 调休安排表</h1>
-  <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
-    <div class="rules">
-      <span>周一 <strong>禁休</strong></span>
-      <span>上限 <strong>3人</strong></span>
-    </div>
-    <div class="share-bar">
-      <button id="exportBtn" title="分享数据给同事">📤 分享</button>
-      <button id="importBtn" title="导入同事分享的数据">📥 导入</button>
+  <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap">
+    <div class="info"><span>周一禁休</span><span>上限3人</span></div>
+    <div class="btns">
+      <button onclick="shareData()">📤 分享</button>
+      <button onclick="importData()">📥 导入</button>
     </div>
   </div>
 </header>
 
 <div class="main">
-  <div class="month-nav">
-    <button id="prevMonth">◀</button>
-    <div class="month-title">
-      <span id="monthTitle">2026 年 6 月</span>
-      <button class="today-btn" id="todayBtn">今天</button>
-    </div>
-    <button id="nextMonth">▶</button>
+  <div class="nav">
+    <button onclick="goMonth(-1)">◀</button>
+    <div class="title"><span id="mt"></span><button class="tbtn" onclick="goToday()">今天</button></div>
+    <button onclick="goMonth(1)">▶</button>
   </div>
-  <div class="calendar-hint" id="calendarHint">展开下方「+ 添加成员」开始录入</div>
-  <div class="calendar-wrap">
-    <table class="calendar-table">
-      <thead>
-        <tr>
-          <th class="monday">一 <small>禁休</small></th>
-          <th>二</th><th>三</th><th>四</th><th>五</th>
-          <th class="weekend">六</th><th class="weekend">日</th>
-        </tr>
-      </thead>
-      <tbody id="calendarBody"></tbody>
-    </table>
-  </div>
-  <div class="footer">
-    <div class="bottom-panel">
-      <div class="people-bar-title">
-        👥 成员 <span class="people-count" id="peopleCount">0 人</span>
-      </div>
-      <div class="people-bar" id="peopleBar"><div class="empty-bar">暂无成员</div></div>
+  <div class="hint" id="hint"></div>
+  <div class="cal"><table><thead><tr>
+    <th class="mon">一<small>禁休</small></th><th>二</th><th>三</th><th>四</th><th>五</th><th class="wk">六</th><th class="wk">日</th>
+  </tr></thead><tbody id="calb"></tbody></table></div>
+  <div class="ft">
+    <div class="bp">
+      <div class="pt">👥 成员 <span id="pcnt"></span></div>
+      <div class="pb" id="pbar"></div>
     </div>
-    <div class="bottom-panel" style="flex:0 0 260px;min-width:220px">
-      <div class="collapse-header" id="collapseToggle">
-        <span class="arrow" id="collapseArrow">▶</span>
-        + 添加成员
+    <div class="bp" style="flex:0 0 240px;min-width:200px">
+      <div class="ch" onclick="toggleAdd()">
+        <span class="ar" id="addar">▶</span> + 添加成员
       </div>
-      <div class="collapse-body" id="collapseBody">
-        <div class="add-row">
-          <input type="text" id="personInput" placeholder="输入姓名" maxlength="20" autocomplete="off">
-          <button id="addBtn">添加</button>
+      <div class="cb2" id="addbox">
+        <div class="ar2">
+          <input type="text" id="pi" placeholder="输入姓名" maxlength="20" onkeydown="if(event.key==='Enter')addPerson()">
+          <button onclick="addPerson()">添加</button>
         </div>
       </div>
     </div>
   </div>
 </div>
-
-<div class="tooltip" id="tooltip"></div>
-<div class="toast" id="toast"></div>
-
-<div class="share-dialog" id="shareDialog">
-  <div class="share-box">
-    <h3 id="shareTitle">📤 分享数据</h3>
-    <p id="shareDesc">复制下面的内容，发给同事。对方点「导入」粘贴即可同步</p>
-    <textarea id="shareText" readonly></textarea>
-    <div class="btns">
-      <button class="secondary" id="shareCancel">取消</button>
-      <button class="primary" id="shareCopy">📋 复制</button>
-    </div>
-  </div>
-</div>
+<div class="tip" id="tip"></div>
 
 <script>
-(function(){
-  "use strict";
+var KEY='liangjian_leave';
+var COLS=['#2563eb','#dc2626','#059669','#d97706','#7c3aed','#db2777','#0891b2','#ca8a04','#4f46e5','#c026d3','#0d9488','#b45309','#1d4ed8','#e11d48','#047857','#a16207','#9333ea','#0284c7','#65a30d','#0f766e'];
 
-  // 先测试 DOM 元素是否存在
-  function hasId(id){var el=document.getElementById(id);if(!el)console.warn('元素缺失:',id);return !!el;}
-  var allIds=['monthTitle','calendarBody','calendarHint','peopleBar','peopleCount',
-    'personInput','addBtn','prevMonth','nextMonth','todayBtn',
-    'collapseToggle','collapseArrow','collapseBody','tooltip','toast',
-    'exportBtn','importBtn','shareDialog','shareTitle','shareDesc',
-    'shareText','shareCancel','shareCopy'];
-  for(var i=0;i<allIds.length;i++)hasId(allIds[i]);
+var data=loadData();
+var activeId=localStorage.getItem(KEY+'_a')||null;
+var collapseOpen=(!data.people||data.people.length===0);
 
-  const COLORS = [
-    '#2563eb','#dc2626','#059669','#d97706','#7c3aed',
-    '#db2777','#0891b2','#ca8a04','#4f46e5','#c026d3',
-    '#0d9488','#b45309','#1d4ed8','#e11d48','#047857',
-    '#a16207','#9333ea','#0284c7','#65a30d','#0f766e',
-  ];
-  const KEY = 'liangjian_leave';
-
-  // ===== DOM =====
-  const $ = id => document.getElementById(id);
-  const dom = {};
-  for(var i=0;i<allIds.length;i++)dom[allIds[i]]=$(allIds[i]);
-
-  // ===== 状态 =====
-  let data = loadData();
-  let activeId = localStorage.getItem(KEY+'_active') || null;
-
-  // ===== 工具 =====
-  function isMon(y,m,d){return new Date(y,m,d).getDay()===1}
-  function isPast(y,m,d){const t=new Date();t.setHours(0,0,0,0);return new Date(y,m,d)<t}
-  function dim(y,m){return new Date(y,m+1,0).getDate()}
-  function esc(s){const d=document.createElement('div');d.textContent=s;return d.innerHTML}
-  function ds(y,m,d){return y+'-'+((m+1)+'').padStart(2,'0')+'-'+(d+'').padStart(2,'0')}
-  function gp(id){return data.people.find(p=>p.id===id)}
-  function ga(){return gp(activeId)}
-  function pod(ds){return data.people.filter(p=>p.leave&&p.leave.includes(ds))}
-  function cod(ds){return pod(ds).length}
-  function genId(){return 'p'+Date.now()+Math.random().toString(36).slice(2,6)}
-
-  // ===== 存储 =====
-  function loadData(){
-    try{
-      var raw=localStorage.getItem(KEY);
-      if(raw){
-        var d=JSON.parse(raw);
-        if(d.people){
-          for(var p=0;p<d.people.length;p++)if(!d.people[p].leave)d.people[p].leave=[];
-          return d;
-        }
-      }
-    }catch(e){}
-    return {people:[],year:(new Date()).getFullYear(),month:(new Date()).getMonth()};
-  }
-  function saveData(){
-    try{
-      localStorage.setItem(KEY,JSON.stringify({people:data.people,year:data.year,month:data.month}));
-      return true;
-    }catch(e){
-      console.warn('保存失败:',e);
-      return false;
-    }
-  }
-
-  // ===== 操作 =====
-  function addPerson(name){
-    name=(name||'').trim();
-    if(!name||data.people.length>=50)return;
-    data.people.push({id:genId(),name:name,color:COLORS[data.people.length%COLORS.length],leave:[]});
-    activeId=data.people[data.people.length-1].id;
-    localStorage.setItem(KEY+'_active',activeId);
-    saveData();render();
-    dom.personInput.value='';dom.personInput.focus();
-  }
-  function removePerson(id){
-    data.people=data.people.filter(p=>p.id!==id);
-    if(activeId===id){activeId=data.people.length?data.people[0].id:null;localStorage.setItem(KEY+'_active',activeId||'')}
-    saveData();render();
-  }
-  function toggleLeave(pid,dateStr){
-    var p=gp(pid);if(!p)return;
-    if(!p.leave)p.leave=[];
-    var idx=p.leave.indexOf(dateStr);
-    if(idx>=0){p.leave.splice(idx,1)}
-    else{
-      var parts=dateStr.split('-').map(Number);
-      if(isMon(parts[0],parts[1]-1,parts[2])||isPast(parts[0],parts[1]-1,parts[2])||cod(dateStr)>=3)return;
-      p.leave.push(dateStr);
-    }
-    saveData();render();
-    // 同步到其他同电脑的标签页
-    try{new BroadcastChannel(KEY).postMessage(JSON.stringify(data))}catch(e){}
-  }
-
-  // ===== 分享 =====
-  function exportData(){
-    try{
-      var shareDialog=dom.shareDialog;
-      dom.shareTitle.textContent='📤 分享数据';
-      dom.shareDesc.textContent='复制下面内容，发给同事。对方点「导入」粘贴即可同步';
-      dom.shareText.value=JSON.stringify({people:data.people,year:data.year,month:data.month});
-      dom.shareText.readOnly=true;
-      shareDialog.classList.add('open');
-      dom.shareCopy.onclick=function(){
-        dom.shareText.select();
-        try{
-          if(navigator.clipboard){
-            navigator.clipboard.writeText(dom.shareText.value).then(function(){
-              dom.shareCopy.textContent='✅ 已复制';
-              setTimeout(function(){dom.shareCopy.textContent='📋 复制'},2000);
-            }).catch(function(){document.execCommand('copy');alert('✅ 已复制，请到群里粘贴')});
-          }else{document.execCommand('copy');alert('✅ 已复制')}
-        }catch(e){document.execCommand('copy');alert('✅ 已复制，请到群里粘贴')}
-      };
-      dom.shareCancel.onclick=function(){shareDialog.classList.remove('open')};
-    }catch(e){alert('分享功能出错:'+e.message)}
-  }
-
-  function importData(){
-    try{
-      var shareDialog=dom.shareDialog;
-      dom.shareTitle.textContent='📥 导入数据';
-      dom.shareDesc.textContent='粘贴同事分享的数据，覆盖当前内容';
-      dom.shareText.value='';
-      dom.shareText.readOnly=false;
-      shareDialog.classList.add('open');
-      dom.shareCopy.textContent='✅ 导入';
-      dom.shareCopy.onclick=function(){
-        try{
-          var d=JSON.parse(dom.shareText.value);
-          if(!d.people||!Array.isArray(d.people)){alert('❌ 数据格式不对，请检查');return}
-          data.people=d.people;data.year=d.year||2026;data.month=d.month!==undefined?d.month:5;
-          for(var p of data.people)if(!p.leave)p.leave=[];
-          activeId=null;localStorage.setItem(KEY+'_active','');
-          saveData();render();
-          shareDialog.classList.remove('open');
-          showToast('✅ 导入成功！共 '+data.people.length+' 人');
-        }catch(e){alert('❌ 数据格式不对，请检查复制的内容')}
-      };
-      dom.shareCancel.onclick=function(){shareDialog.classList.remove('open')};
-      setTimeout(function(){dom.shareText.focus()},200);
-    }catch(e){alert('导入功能出错:'+e.message)}
-  }
-
-  // ===== 提示 =====
-  var tipTimer=null;
-  function showTip(el,msg){
-    dom.tooltip.textContent=msg;dom.tooltip.style.display='block';
-    var r=el.getBoundingClientRect();
-    dom.tooltip.style.left=(r.left+r.width/2)+'px';dom.tooltip.style.top=(r.top-10)+'px';
-    dom.tooltip.style.transform='translate(-50%,-100%)';
-    clearTimeout(tipTimer);tipTimer=setTimeout(function(){dom.tooltip.style.display='none'},1800);
-  }
-  var toastTimer=null;
-  function showToast(msg){
-    dom.toast.textContent=msg;dom.toast.style.display='block';
-    clearTimeout(toastTimer);toastTimer=setTimeout(function(){dom.toast.style.display='none'},2500);
-  }
-
-  // ===== 同机多标签同步 =====
+function loadData(){
   try{
-    var bc=new BroadcastChannel(KEY);
-    bc.onmessage=function(e){
-      try{
-        var d=JSON.parse(e.data);
-        if(d.people){data.people=d.people;for(var p of data.people)if(!p.leave)p.leave=[];data.year=d.year||2026;data.month=d.month!==undefined?d.month:5;render()}
-      }catch(e){}
-    };
+    var r=localStorage.getItem(KEY);
+    if(r){var d=JSON.parse(r);if(d&&d.people){for(var i=0;i<d.people.length;i++)if(!d.people[i].leave)d.people[i].leave=[];return d}}
   }catch(e){}
+  var t=new Date();return{people:[],year:t.getFullYear(),month:t.getMonth()};
+}
+function save(){try{localStorage.setItem(KEY,JSON.stringify({people:data.people,year:data.year,month:data.month}))}catch(e){}}
+function genId(){return'p'+Date.now()+Math.random().toString(36).slice(2,6)}
+function esc(s){var d=document.createElement('div');d.textContent=s;return d.innerHTML}
+function ds(y,m,d){return y+'-'+((m+1)+'').padStart(2,'0')+'-'+(d+'').padStart(2,'0')}
+function im(y,m,d){return new Date(y,m,d).getDay()===1}
+function ip(y,m,d){var t=new Date();t.setHours(0,0,0,0);return new Date(y,m,d)<t}
+function dim(y,m){return new Date(y,m+1,0).getDate()}
 
-  // ===== 渲染 =====
-  function render(){
-    var py=data.people||[];
-    dom.peopleCount.textContent=py.length+' 人';
-    if(py.length===0){
-      dom.peopleBar.innerHTML='<div class="empty-bar">暂无成员，展开右侧添加</div>';
-    }else{
-      var h='';
-      for(var p of py){
-        var act=p.id===activeId?' active':'';
-        h+='<div class="person-chip'+act+'" data-id="'+p.id+'" style="--pc:'+p.color+'">';
-        h+='<span class="cd" style="background:'+p.color+'"></span>';
-        h+='<span class="cn">'+esc(p.name)+'</span>';
-        h+='<span class="cdays">'+(p.leave||[]).length+'</span>';
-        h+='<span class="cdel" data-id="'+p.id+'">✕</span></div>';
-      }
-      dom.peopleBar.innerHTML=h;
-      dom.peopleBar.querySelectorAll('.person-chip').forEach(function(el){
-        el.onclick=function(e){
-          if(e.target.classList.contains('cdel'))return;
-          activeId=this.dataset.id;localStorage.setItem(KEY+'_active',activeId);render();
-        };
-      });
-      dom.peopleBar.querySelectorAll('.cdel').forEach(function(el){
-        el.onclick=function(e){e.stopPropagation();var id=this.dataset.id;var p=gp(id);if(p&&confirm('移除此成员？'))removePerson(id)};
-      });
-    }
+function gp(id){if(!data.people)return null;for(var i=0;i<data.people.length;i++)if(data.people[i].id===id)return data.people[i];return null}
+function ga(){return gp(activeId)}
+function pod(ds){var r=[];if(!data.people)return r;for(var i=0;i<data.people.length;i++){var p=data.people[i];if(p.leave)for(var j=0;j<p.leave.length;j++)if(p.leave[j]===ds){r.push(p);break}}return r}
+function cod(ds){return pod(ds).length}
 
-    var y=data.year,m=data.month;
-    var days=dim(y,m),first=new Date(y,m,1).getDay(),sc=first===0?6:first-1;
-    dom.monthTitle.textContent=y+' 年 '+(m+1)+' 月';
-    var rows=Math.ceil((sc+days)/7),chtml='';
-    for(var r=0;r<rows;r++){
-      chtml+='<tr>';
-      for(var c=0;c<7;c++){
-        var d=r*7+c-sc+1;
-        if(d<1||d>days){chtml+='<td class="other-month"><div class="day-cell"><div class="date-num"> </div></div></td>';continue}
-        var dateStr=ds(y,m,d),mon=isMon(y,m,d),past=isPast(y,m,d),ac=ga(),ols=pod(dateStr),cnt=ols.length;
-        var meOn=false;if(ac&&ac.leave){for(var k of ac.leave){if(k===dateStr){meOn=true;break}}}
-        var cls='day-cell';if(mon)cls+=' monday';else if(past)cls+=' past';else if(ac)cls+=' clickable';
-        var nhtml='';
-        for(var k=0;k<ols.length&&k<3;k++)nhtml+='<span class="name-tag" style="background:'+ols[k].color+'">'+esc(ols[k].name)+'</span>';
-        if(ols.length>3)nhtml+='<span class="name-tag overflow">+'+(ols.length-3)+'</span>';
-        var badge=mon?'':'<span class="count-badge'+(cnt>=3?' full':'')+'">'+cnt+'/3</span>';
-        var dot=meOn?'<div class="active-dot" style="background:'+ac.color+'"></div>':'';
-        var mtxt=mon?'<div class="monday-badge">🚫 禁休</div>':'';
-        chtml+='<td data-date="'+dateStr+'"><div class="'+cls+'"><div class="date-num">'+d+'</div>'+mtxt+'<div class="names-wrap">'+nhtml+'</div>'+badge+dot+'</div></td>';
-      }
-      chtml+='</tr>';
+function addPerson(){
+  var inp=document.getElementById('pi');
+  var name=(inp.value||'').trim();
+  if(!name||(data.people&&data.people.length>=50))return;
+  if(!data.people)data.people=[];
+  data.people.push({id:genId(),name:name,color:COLS[data.people.length%COLS.length],leave:[]});
+  activeId=data.people[data.people.length-1].id;
+  localStorage.setItem(KEY+'_a',activeId);
+  inp.value='';save();render();
+  // 自动关闭添加框
+  if(!data.people||data.people.length>0){collapseOpen=false;document.getElementById('addbox').className='cb2';document.getElementById('addar').className='ar';}
+}
+function removePerson(id){
+  if(!data.people)return;
+  var idx=-1;for(var i=0;i<data.people.length;i++)if(data.people[i].id===id){idx=i;break}
+  if(idx>-1)data.people.splice(idx,1);
+  if(activeId===id){activeId=data.people.length>0?data.people[0].id:null;localStorage.setItem(KEY+'_a',activeId||'')}
+  save();render();
+}
+function toggleLeave(pid,ds){
+  var p=gp(pid);if(!p)return;
+  if(!p.leave)p.leave=[];
+  var idx=-1;for(var i=0;i<p.leave.length;i++)if(p.leave[i]===ds){idx=i;break}
+  if(idx>=0)p.leave.splice(idx,1);
+  else{p.leave.push(ds)}
+  save();render();
+}
+function toggleAdd(){
+  collapseOpen=!collapseOpen;
+  document.getElementById('addbox').className='cb2'+(collapseOpen?' op':'');
+  document.getElementById('addar').className='ar'+(collapseOpen?' op':'');
+}
+
+function shareData(){
+  var txt=JSON.stringify({people:data.people||[],year:data.year,month:data.month});
+  try{
+    if(navigator.clipboard){navigator.clipboard.writeText(txt).then(function(){alert('✅ 已复制到剪贴板，请到群里粘贴！')})['catch'](function(){prompt('📋 请复制下面内容发到群里：',txt)})}
+    else{prompt('📋 请复制下面内容发到群里：',txt)}
+  }catch(e){prompt('📋 请复制下面内容发到群里：',txt)}
+}
+function importData(){
+  var txt=prompt('📥 请粘贴同事分享的数据：');
+  if(!txt)return;
+  try{
+    var d=JSON.parse(txt);
+    if(!d||!d.people||!Array.isArray(d.people)){alert('❌ 数据格式不对');return}
+    data.people=d.people;
+    data.year=d.year||(new Date()).getFullYear();
+    data.month=d.month!==undefined?d.month:(new Date()).getMonth();
+    for(var i=0;i<data.people.length;i++)if(!data.people[i].leave)data.people[i].leave=[];
+    activeId=null;localStorage.setItem(KEY+'_a','');
+    save();render();
+    alert('✅ 导入成功！共 '+data.people.length+' 人');
+  }catch(e){alert('❌ 数据格式不对，请检查')}
+}
+
+function goMonth(n){
+  data.month+=n;
+  if(data.month<0){data.month=11;data.year--}
+  if(data.month>11){data.month=0;data.year++}
+  save();render();
+}
+function goToday(){
+  var t=new Date();data.year=t.getFullYear();data.month=t.getMonth();save();render();
+}
+document.onkeydown=function(e){
+  if(e.target.tagName==='INPUT')return;
+  if(e.key==='ArrowLeft')goMonth(-1);
+  if(e.key==='ArrowRight')goMonth(1);
+};
+
+function render(){
+  var py=data.people||[];
+  document.getElementById('pcnt').textContent=py.length+' 人';
+
+  // 成员条
+  var pb=document.getElementById('pbar');
+  if(py.length===0){pb.innerHTML='<div class="eb">暂无成员，点「+ 添加成员」录入</div>'}
+  else{
+    var h='';
+    for(var i=0;i<py.length;i++){
+      var p=py[i];
+      h+='<div class="pc'+(p.id===activeId?' act':'')+'" style="--c:'+p.color+'" onclick="selectPerson(\''+p.id+'\')">';
+      h+='<span class="d" style="background:'+p.color+'"></span>';
+      h+='<span class="n">'+esc(p.name)+'</span>';
+      h+='<span class="l">'+(p.leave?p.leave.length:0)+'</span>';
+      h+='<span class="x" onclick="event.stopPropagation();removePerson(\''+p.id+'\')">✕</span></div>';
     }
-    dom.calendarBody.innerHTML=chtml;
-    dom.calendarBody.querySelectorAll('td[data-date]').forEach(function(td){
-      td.onclick=function(){
-        var dateStr=this.dataset.date,ac=ga();
-        if(!ac){showTip(this,'请先点选成员');return}
-        var parts=dateStr.split('-').map(Number);
-        if(isMon(parts[0],parts[1]-1,parts[2])){showTip(this,'周一禁休');return}
-        if(isPast(parts[0],parts[1]-1,parts[2])){showTip(this,'已过日期不可修改');return}
-        var isMine=false;if(ac.leave){for(var k of ac.leave){if(k===dateStr){isMine=true;break}}}
-        if(!isMine&&cod(dateStr)>=3){showTip(this,'已达上限 3 人');return}
-        toggleLeave(ac.id,dateStr);
-      };
-    });
-    var ac2=ga();
-    if(ac2)dom.calendarHint.innerHTML='当前：<strong>'+esc(ac2.name)+'</strong> — 点击日期安排/取消（已休'+(ac2.leave||[]).length+'天）';
-    else if(py.length>0)dom.calendarHint.innerHTML='请点击下方成员选中后，再点日期安排调休';
-    else dom.calendarHint.innerHTML='展开「+ 添加成员」录入成员';
+    pb.innerHTML=h;
   }
 
-  // ===== 事件 =====
-  dom.addBtn.onclick=function(){addPerson(dom.personInput.value)};
-  dom.personInput.onkeydown=function(e){if(e.key==='Enter')addPerson(dom.personInput.value)};
-  // 没有成员时默认展开添加区域
-  var collapseOpen = data.people.length === 0;
-  if(collapseOpen){dom.collapseBody.className='collapse-body open';dom.collapseArrow.className='arrow open';}
-  dom.collapseToggle.onclick=function(){collapseOpen=!collapseOpen;dom.collapseBody.className='collapse-body'+(collapseOpen?' open':'');dom.collapseArrow.className='arrow'+(collapseOpen?' open':'')};
-  dom.prevBtn.onclick=function(){var y=data.year,m=data.month-1;if(m<0){m=11;y--}data.year=y;data.month=m;saveData();render()};
-  dom.nextBtn.onclick=function(){var y=data.year,m=data.month+1;if(m>11){m=0;y++}data.year=y;data.month=m;saveData();render()};
-  dom.todayBtn.onclick=function(){var t=new Date();data.year=t.getFullYear();data.month=t.getMonth();saveData();render()};
-  dom.exportBtn.onclick=exportData;
-  dom.importBtn.onclick=importData;
-  document.onkeydown=function(e){if(e.target.tagName==='INPUT')return;if(e.key==='ArrowLeft')dom.prevBtn.onclick();if(e.key==='ArrowRight')dom.nextBtn.onclick()};
-  // 点弹窗外关闭
-  dom.shareDialog.onclick=function(e){if(e.target===this)this.classList.remove('open')};
+  // 日历
+  var y=data.year||(new Date()).getFullYear();
+  var m=data.month!==undefined?data.month:(new Date()).getMonth();
+  var days=dim(y,m);
+  var first=new Date(y,m,1).getDay();
+  var sc=first===0?6:first-1;
+  document.getElementById('mt').textContent=y+' 年 '+(m+1)+' 月';
+  var rows=Math.ceil((sc+days)/7),chtml='';
+  for(var r=0;r<rows;r++){
+    chtml+='<tr>';
+    for(var c=0;c<7;c++){
+      var d=r*7+c-sc+1;
+      if(d<1||d>days){chtml+='<td class="om"><div class="cell"><div class="dt"> </div></div></td>';continue}
+      var str=ds(y,m,d),mon=im(y,m,d),past=ip(y,m,d),ac=ga(),ols=pod(str),cnt=ols.length;
+      var me=false;if(ac&&ac.leave)for(var k=0;k<ac.leave.length;k++)if(ac.leave[k]===str){me=true;break}
+      var cl='cell';
+      if(mon||past)cl+=' dis';
+      else if(ac)cl+=' ok';
+      var nh='';
+      for(var k=0;k<ols.length&&k<3;k++)nh+='<span class="nt" style="background:'+ols[k].color+'">'+esc(ols[k].name)+'</span>';
+      if(ols.length>3)nh+='<span class="nt" style="background:transparent;color:#64748b;font-weight:700">+'+(ols.length-3)+'</span>';
+      var badge=mon?'':'<span class="cb'+(cnt>=3?' f':'')+'">'+cnt+'/3</span>';
+      var dot=me?'<div class="ad" style="background:'+ac.color+'"></div>':'';
+      var mtxt=mon?'<div class="mt">🚫 禁休</div>':'';
+      chtml+='<td onclick="clickDate(\''+str+'\')"><div class="'+cl+'"><div class="dt">'+d+'</div>'+mtxt+'<div class="nw">'+nh+'</div>'+badge+dot+'</div></td>';
+    }
+    chtml+='</tr>';
+  }
+  document.getElementById('calb').innerHTML=chtml;
 
-  render();
-})();
+  // 提示
+  var ac2=ga();
+  if(ac2)document.getElementById('hint').innerHTML='当前：<strong>'+esc(ac2.name)+'</strong> — 点击日期安排/取消（已休'+(ac2.leave?ac2.leave.length:0)+'天）';
+  else if(py.length>0)document.getElementById('hint').innerHTML='请点击下方成员选中后，再点日期安排调休';
+  else document.getElementById('hint').innerHTML='展开「+ 添加成员」录入成员';
+}
+
+function selectPerson(id){
+  activeId=id;localStorage.setItem(KEY+'_a',id);render();
+}
+function clickDate(str){
+  var ac=ga();
+  if(!ac){showTip(event&&event.target?event.target:document.getElementById('calb'),'请先点选成员');return}
+  var parts=str.split('-').map(Number);
+  if(im(parts[0],parts[1]-1,parts[2])){showTip(event.target,'周一禁休');return}
+  if(ip(parts[0],parts[1]-1,parts[2])){showTip(event.target,'已过日期不可修改');return}
+  var me=false;if(ac.leave)for(var k=0;k<ac.leave.length;k++)if(ac.leave[k]===str){me=true;break}
+  if(!me&&cod(str)>=3){showTip(event.target,'已达上限3人');return}
+  toggleLeave(ac.id,str);
+}
+
+var tipTimer=null;
+function showTip(el,msg){
+  var t=document.getElementById('tip');
+  t.textContent=msg;t.style.display='block';
+  var r=el.getBoundingClientRect();
+  t.style.left=(r.left+r.width/2)+'px';t.style.top=(r.top-10)+'px';
+  t.style.transform='translate(-50%,-100%)';
+  clearTimeout(tipTimer);tipTimer=setTimeout(function(){t.style.display='none'},1800);
+}
+
+render();
+// 如果没成员，展开添加框
+if(!data.people||data.people.length===0){
+  document.getElementById('addbox').className='cb2 op';
+  document.getElementById('addar').className='ar op';
+}
 </script>
 </body>
 </html>

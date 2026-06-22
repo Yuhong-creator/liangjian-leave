@@ -161,6 +161,15 @@ header .share-bar button:hover{background:rgba(255,255,255,.35)}
 (function(){
   "use strict";
 
+  // 先测试 DOM 元素是否存在
+  function hasId(id){var el=document.getElementById(id);if(!el)console.warn('元素缺失:',id);return !!el;}
+  var allIds=['monthTitle','calendarBody','calendarHint','peopleBar','peopleCount',
+    'personInput','addBtn','prevMonth','nextMonth','todayBtn',
+    'collapseToggle','collapseArrow','collapseBody','tooltip','toast',
+    'exportBtn','importBtn','shareDialog','shareTitle','shareDesc',
+    'shareText','shareCancel','shareCopy'];
+  for(var i=0;i<allIds.length;i++)hasId(allIds[i]);
+
   const COLORS = [
     '#2563eb','#dc2626','#059669','#d97706','#7c3aed',
     '#db2777','#0891b2','#ca8a04','#4f46e5','#c026d3',
@@ -172,11 +181,7 @@ header .share-bar button:hover{background:rgba(255,255,255,.35)}
   // ===== DOM =====
   const $ = id => document.getElementById(id);
   const dom = {};
-  ['monthTitle','calendarBody','calendarHint','peopleBar','peopleCount',
-   'personInput','addBtn','prevMonth','nextMonth','todayBtn',
-   'collapseToggle','collapseArrow','collapseBody','tooltip','toast',
-   'exportBtn','importBtn','shareDialog','shareTitle','shareDesc',
-   'shareText','shareCancel','shareCopy'].forEach(id => dom[id]=$(id));
+  for(var i=0;i<allIds.length;i++)dom[allIds[i]]=$(allIds[i]);
 
   // ===== 状态 =====
   let data = loadData();
@@ -238,43 +243,52 @@ header .share-bar button:hover{background:rgba(255,255,255,.35)}
 
   // ===== 分享 =====
   function exportData(){
-    var shareDialog=dom.shareDialog;
-    dom.shareTitle.textContent='📤 分享数据';
-    dom.shareDesc.textContent='复制下面的内容，发给同事。对方打开页面点「导入」粘贴即可同步';
-    dom.shareText.value=JSON.stringify(data);
-    dom.shareText.readOnly=true;
-    shareDialog.classList.add('open');
-    dom.shareCopy.onclick=function(){
-      dom.shareText.select();
-      try{navigator.clipboard.writeText(dom.shareText.value).then(function(){
-        dom.shareCopy.textContent='✅ 已复制';setTimeout(function(){dom.shareCopy.textContent='📋 复制'},2000);
-      }).catch(function(){document.execCommand('copy');showToast('✅ 已复制')})}catch(e){document.execCommand('copy');showToast('✅ 已复制')}
-    };
-    dom.shareCancel.onclick=function(){shareDialog.classList.remove('open')};
+    try{
+      var shareDialog=dom.shareDialog;
+      dom.shareTitle.textContent='📤 分享数据';
+      dom.shareDesc.textContent='复制下面内容，发给同事。对方点「导入」粘贴即可同步';
+      dom.shareText.value=JSON.stringify({people:data.people,year:data.year,month:data.month});
+      dom.shareText.readOnly=true;
+      shareDialog.classList.add('open');
+      dom.shareCopy.onclick=function(){
+        dom.shareText.select();
+        try{
+          if(navigator.clipboard){
+            navigator.clipboard.writeText(dom.shareText.value).then(function(){
+              dom.shareCopy.textContent='✅ 已复制';
+              setTimeout(function(){dom.shareCopy.textContent='📋 复制'},2000);
+            }).catch(function(){document.execCommand('copy');alert('✅ 已复制，请到群里粘贴')});
+          }else{document.execCommand('copy');alert('✅ 已复制')}
+        }catch(e){document.execCommand('copy');alert('✅ 已复制，请到群里粘贴')}
+      };
+      dom.shareCancel.onclick=function(){shareDialog.classList.remove('open')};
+    }catch(e){alert('分享功能出错:'+e.message)}
   }
 
   function importData(){
-    var shareDialog=dom.shareDialog;
-    dom.shareTitle.textContent='📥 导入数据';
-    dom.shareDesc.textContent='粘贴同事分享的数据，覆盖当前内容';
-    dom.shareText.value='';
-    dom.shareText.readOnly=false;
-    shareDialog.classList.add('open');
-    dom.shareCopy.textContent='✅ 导入';
-    dom.shareCopy.onclick=function(){
-      try{
-        var d=JSON.parse(dom.shareText.value);
-        if(!d.people||!Array.isArray(d.people)){showToast('❌ 数据格式不对');return}
-        data.people=d.people;data.year=d.year||2026;data.month=d.month!==undefined?d.month:5;
-        for(var p of data.people)if(!p.leave)p.leave=[];
-        activeId=null;localStorage.setItem(KEY+'_active','');
-        saveData();render();
-        shareDialog.classList.remove('open');
-        showToast('✅ 导入成功！共 '+data.people.length+' 人');
-      }catch(e){showToast('❌ 数据格式不对，请检查')}
-    };
-    dom.shareCancel.onclick=function(){shareDialog.classList.remove('open')};
-    setTimeout(function(){dom.shareText.focus()},200);
+    try{
+      var shareDialog=dom.shareDialog;
+      dom.shareTitle.textContent='📥 导入数据';
+      dom.shareDesc.textContent='粘贴同事分享的数据，覆盖当前内容';
+      dom.shareText.value='';
+      dom.shareText.readOnly=false;
+      shareDialog.classList.add('open');
+      dom.shareCopy.textContent='✅ 导入';
+      dom.shareCopy.onclick=function(){
+        try{
+          var d=JSON.parse(dom.shareText.value);
+          if(!d.people||!Array.isArray(d.people)){alert('❌ 数据格式不对，请检查');return}
+          data.people=d.people;data.year=d.year||2026;data.month=d.month!==undefined?d.month:5;
+          for(var p of data.people)if(!p.leave)p.leave=[];
+          activeId=null;localStorage.setItem(KEY+'_active','');
+          saveData();render();
+          shareDialog.classList.remove('open');
+          showToast('✅ 导入成功！共 '+data.people.length+' 人');
+        }catch(e){alert('❌ 数据格式不对，请检查复制的内容')}
+      };
+      dom.shareCancel.onclick=function(){shareDialog.classList.remove('open')};
+      setTimeout(function(){dom.shareText.focus()},200);
+    }catch(e){alert('导入功能出错:'+e.message)}
   }
 
   // ===== 提示 =====

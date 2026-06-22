@@ -4,20 +4,19 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>亮剑组 · 调休安排表</title>
-<script src="https://cdn.jsdelivr.net/npm/gun/gun.js"></script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;background:#f1f5f9;color:#1e293b;min-height:100vh}
 header{background:linear-gradient(135deg,#1e3a5f,#2563eb);color:#fff;padding:14px 24px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px}
 header h1{font-size:18px;font-weight:700}
 header .rules{font-size:12px;background:rgba(255,255,255,.15);padding:4px 14px;border-radius:20px;display:flex;gap:12px}
-header .status{font-size:11px;display:flex;align-items:center;gap:6px;background:rgba(255,255,255,.12);padding:4px 14px;border-radius:10px}
-.dot{width:7px;height:7px;border-radius:50%;display:inline-block;background:#ef4444}
-.dot.green{background:#22c55e;box-shadow:0 0 5px #22c55e}
+header .share-bar{display:flex;gap:6px}
+header .share-bar button{font-size:11px;padding:4px 10px;border:none;border-radius:6px;cursor:pointer;background:rgba(255,255,255,.2);color:#fff;font-weight:500}
+header .share-bar button:hover{background:rgba(255,255,255,.35)}
 .main{padding:16px 20px;max-width:1400px;margin:0 auto}
 .month-nav{display:flex;align-items:center;justify-content:center;gap:16px;margin-bottom:12px}
 .month-nav button{width:30px;height:30px;border-radius:8px;border:1.5px solid #e2e8f0;background:#fff;font-size:14px;cursor:pointer}
-.month-nav button:hover{border-color:#2563eb;color:#2563eb}
+.month-nav button:hover{border-color:#2563eb}
 .month-nav .month-title{font-size:17px;font-weight:700;min-width:150px;text-align:center}
 .month-nav .month-title .today-btn{font-size:11px;color:#2563eb;cursor:pointer;margin-left:6px;padding:2px 8px;border-radius:4px;background:#eff6ff;border:none}
 .calendar-hint{text-align:center;font-size:13px;color:#64748b;margin-bottom:10px;padding:5px;background:#f8fafc;border-radius:8px;min-height:28px}
@@ -28,7 +27,6 @@ header .status{font-size:11px;display:flex;align-items:center;gap:6px;background
 .calendar-table th.monday small{display:block;font-weight:400;font-size:10px;color:#fca5a5}
 .calendar-table th.weekend{color:#10b981}
 .calendar-table td{border:1px solid #f1f5f9;vertical-align:top;padding:0;position:relative;height:76px;cursor:default}
-.calendar-table td.other-month{background:#fafafa}
 .day-cell{padding:3px 5px;height:100%;position:relative}
 .day-cell.clickable{cursor:pointer}
 .day-cell.clickable:hover{background:#eff6ff}
@@ -37,24 +35,24 @@ header .status{font-size:11px;display:flex;align-items:center;gap:6px;background
 .names-wrap{display:flex;flex-wrap:wrap;gap:1.5px}
 .name-tag{font-size:11px;padding:1px 6px;border-radius:4px;color:#fff;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;line-height:1.8}
 .name-tag.overflow{background:transparent!important;color:#64748b;font-weight:700}
-.count-badge{position:absolute;bottom:2px;right:3px;font-size:10px;font-weight:700;color:#94a3b8;background:#f1f5f9;border-radius:4px;padding:0 5px;line-height:1.6}
+.count-badge{position:absolute;bottom:2px;right:3px;font-size:10px;font-weight:700;color:#94a3b8;background:#f1f5f9;border-radius:4px;padding:0 5px}
 .count-badge.full{background:#fef3c7;color:#d97706}
 .active-dot{position:absolute;top:2px;right:3px;width:5px;height:5px;border-radius:50%}
 .monday-badge{color:#ef4444;font-size:11px;font-weight:600;padding-top:4px;text-align:center}
 .footer{margin-top:12px;display:flex;flex-wrap:wrap;gap:12px}
 .bottom-panel{flex:1;min-width:280px;background:#fff;border-radius:10px;box-shadow:0 1px 4px rgba(0,0,0,.08);padding:12px 14px}
 .people-bar-title{font-size:13px;font-weight:600;color:#475569;margin-bottom:8px;display:flex;align-items:center;gap:6px}
-.people-bar-title .count{font-weight:400;color:#94a3b8;font-size:12px}
+.people-count{font-weight:400;color:#94a3b8;font-size:12px}
 .people-bar{display:flex;flex-wrap:wrap;gap:5px}
 .person-chip{display:inline-flex;align-items:center;gap:5px;padding:5px 10px;border-radius:20px;cursor:pointer;border:2px solid transparent;background:#f8fafc;font-size:13px;user-select:none}
 .person-chip:hover{background:#f1f5f9}
 .person-chip.active{border-color:var(--pc);background:#eff6ff;font-weight:600}
 .person-chip .cd{width:9px;height:9px;border-radius:50%;flex-shrink:0}
 .person-chip .cn{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:80px}
-.person-chip .cdays{font-size:10px;color:#94a3b8;font-weight:400}
+.person-chip .cdays{font-size:10px;color:#94a3b8}
 .person-chip .cdel{font-size:12px;color:#cbd5e1;cursor:pointer;padding:0 2px}
 .person-chip .cdel:hover{color:#ef4444;background:#fef2f2}
-.empty-bar{color:#94a3b8;font-size:13px;padding:6px 0;min-height:24px}
+.empty-bar{color:#94a3b8;font-size:13px;padding:6px 0}
 .collapse-header{display:flex;align-items:center;gap:6px;cursor:pointer;user-select:none;color:#475569;font-size:13px;font-weight:600}
 .collapse-header:hover{color:#2563eb}
 .collapse-header .arrow{transition:transform .2s;font-size:10px;display:inline-block}
@@ -67,23 +65,35 @@ header .status{font-size:11px;display:flex;align-items:center;gap:6px;background
 .add-row button{padding:7px 18px;background:#2563eb;color:#fff;border:none;border-radius:8px;font-size:14px;cursor:pointer;font-weight:600}
 .add-row button:hover{background:#1d4ed8}
 .tooltip{position:fixed;z-index:999;background:#1e293b;color:#fff;padding:5px 10px;border-radius:6px;font-size:12px;pointer-events:none;white-space:nowrap;box-shadow:0 4px 12px rgba(0,0,0,.2);display:none}
-@media(max-width:768px){.main{padding:10px}.month-nav .month-title{font-size:15px;min-width:auto}.bottom-panel{min-width:auto}header h1{font-size:15px}}
-@media print{header{-webkit-print-color-adjust:exact;print-color-adjust:exact}.month-nav button,.calendar-hint,.footer{display:none!important}}
+.toast{position:fixed;bottom:30px;left:50%;transform:translateX(-50%);background:#1e293b;color:#fff;padding:10px 20px;border-radius:8px;font-size:13px;z-index:9999;display:none;box-shadow:0 4px 12px rgba(0,0,0,.3)}
+.share-dialog{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:9998;display:none;align-items:center;justify-content:center}
+.share-dialog.open{display:flex}
+.share-box{background:#fff;border-radius:14px;padding:24px;width:440px;max-width:92vw;box-shadow:0 20px 60px rgba(0,0,0,.2)}
+.share-box h3{font-size:16px;margin-bottom:4px}
+.share-box p{font-size:13px;color:#64748b;margin-bottom:14px}
+.share-box textarea{width:100%;height:120px;padding:10px;border:1.5px solid #e2e8f0;border-radius:8px;font-size:12px;resize:vertical;outline:none}
+.share-box textarea:focus{border-color:#2563eb}
+.share-box .btns{display:flex;gap:8px;margin-top:10px}
+.share-box .btns button{flex:1;padding:8px;border:none;border-radius:8px;font-size:13px;cursor:pointer;font-weight:600}
+.share-box .btns .primary{background:#2563eb;color:#fff}
+.share-box .btns .primary:hover{background:#1d4ed8}
+.share-box .btns .secondary{background:#f1f5f9;color:#475569}
+.share-box .btns .secondary:hover{background:#e2e8f0}
+@media(max-width:768px){.main{padding:10px}.month-nav .month-title{font-size:15px;min-width:auto}.bottom-panel{min-width:auto}header h1{font-size:15px}.share-bar button{font-size:10px!important;padding:3px 6px!important}}
 </style>
 </head>
 <body>
 
 <header>
   <h1>亮剑组 · 调休安排表</h1>
-  <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+  <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
     <div class="rules">
       <span>周一 <strong>禁休</strong></span>
-      <span>每日上限 <strong>3 人</strong></span>
+      <span>上限 <strong>3人</strong></span>
     </div>
-    <div class="status">
-      <span class="dot" id="statusDot"></span>
-      <span id="statusText">连接中...</span>
-      <span id="onlineInfo" style="margin-left:4px"></span>
+    <div class="share-bar">
+      <button id="exportBtn" title="分享数据给同事">📤 分享</button>
+      <button id="importBtn" title="导入同事分享的数据">📥 导入</button>
     </div>
   </div>
 </header>
@@ -97,7 +107,7 @@ header .status{font-size:11px;display:flex;align-items:center;gap:6px;background
     </div>
     <button id="nextMonth">▶</button>
   </div>
-  <div class="calendar-hint" id="calendarHint">展开下方「+ 添加成员」录入后开始安排</div>
+  <div class="calendar-hint" id="calendarHint">展开下方「+ 添加成员」开始录入</div>
   <div class="calendar-wrap">
     <table class="calendar-table">
       <thead>
@@ -113,8 +123,7 @@ header .status{font-size:11px;display:flex;align-items:center;gap:6px;background
   <div class="footer">
     <div class="bottom-panel">
       <div class="people-bar-title">
-        👥 成员 <span class="count" id="peopleCount">0 人</span>
-        <span class="online-info" id="onlineCount"></span>
+        👥 成员 <span class="people-count" id="peopleCount">0 人</span>
       </div>
       <div class="people-bar" id="peopleBar"><div class="empty-bar">暂无成员</div></div>
     </div>
@@ -132,7 +141,21 @@ header .status{font-size:11px;display:flex;align-items:center;gap:6px;background
     </div>
   </div>
 </div>
+
 <div class="tooltip" id="tooltip"></div>
+<div class="toast" id="toast"></div>
+
+<div class="share-dialog" id="shareDialog">
+  <div class="share-box">
+    <h3 id="shareTitle">📤 分享数据</h3>
+    <p id="shareDesc">复制下面的内容，发给同事。对方点「导入」粘贴即可同步</p>
+    <textarea id="shareText" readonly></textarea>
+    <div class="btns">
+      <button class="secondary" id="shareCancel">取消</button>
+      <button class="primary" id="shareCopy">📋 复制</button>
+    </div>
+  </div>
+</div>
 
 <script>
 (function(){
@@ -144,293 +167,226 @@ header .status{font-size:11px;display:flex;align-items:center;gap:6px;background
     '#0d9488','#b45309','#1d4ed8','#e11d48','#047857',
     '#a16207','#9333ea','#0284c7','#65a30d','#0f766e',
   ];
+  const KEY = 'liangjian_leave';
 
-  /* ===== Gun.js 初始化 ===== */
-  const gun = Gun(['https://gun-manhattan.herokuapp.com/gun']);
-  const dataNode = gun.get('liangjian_leave_v4');
-
-  /* ===== DOM ===== */
+  // ===== DOM =====
   const $ = id => document.getElementById(id);
   const dom = {};
-  ['statusDot','statusText','onlineInfo','monthTitle','calendarBody','calendarHint',
-   'peopleBar','peopleCount','personInput','addBtn','onlineCount',
-   'prevMonth','nextMonth','todayBtn','collapseToggle','collapseArrow','collapseBody','tooltip']
-    .forEach(id => dom[id] = $(id));
+  ['monthTitle','calendarBody','calendarHint','peopleBar','peopleCount',
+   'personInput','addBtn','prevMonth','nextMonth','todayBtn',
+   'collapseToggle','collapseArrow','collapseBody','tooltip','toast',
+   'exportBtn','importBtn','shareDialog','shareTitle','shareDesc',
+   'shareText','shareCancel','shareCopy'].forEach(id => dom[id]=$(id));
 
-  /* ===== 状态 ===== */
-  let state = { people: [], year: 2026, month: 5 };
-  let activeId = localStorage.getItem('liangjian_active') || null;
-  let synced = false;
+  // ===== 状态 =====
+  let data = loadData();
+  let activeId = localStorage.getItem(KEY+'_active') || null;
 
-  function isMon(y,m,d) { return new Date(y,m,d).getDay() === 1; }
-  function isPast(y,m,d) { const t=new Date(); t.setHours(0,0,0,0); return new Date(y,m,d) < t; }
-  function dim(y,m) { return new Date(y,m+1,0).getDate(); }
-  function esc(s) { const d=document.createElement('div'); d.textContent=s; return d.innerHTML; }
-  function ds(y,m,d) { return y+'-'+((m+1)+'').padStart(2,'0')+'-'+(d+'').padStart(2,'0'); }
-  function gp(id) { return state.people.find(p => p.id === id); }
-  function ga() { return gp(activeId); }
-  function pod(ds) { return state.people.filter(p => p.leave && p.leave.includes(ds)); }
-  function cod(ds) { return pod(ds).length; }
+  // ===== 工具 =====
+  function isMon(y,m,d){return new Date(y,m,d).getDay()===1}
+  function isPast(y,m,d){const t=new Date();t.setHours(0,0,0,0);return new Date(y,m,d)<t}
+  function dim(y,m){return new Date(y,m+1,0).getDate()}
+  function esc(s){const d=document.createElement('div');d.textContent=s;return d.innerHTML}
+  function ds(y,m,d){return y+'-'+((m+1)+'').padStart(2,'0')+'-'+(d+'').padStart(2,'0')}
+  function gp(id){return data.people.find(p=>p.id===id)}
+  function ga(){return gp(activeId)}
+  function pod(ds){return data.people.filter(p=>p.leave&&p.leave.includes(ds))}
+  function cod(ds){return pod(ds).length}
+  function genId(){return 'p'+Date.now()+Math.random().toString(36).slice(2,6)}
 
-  function genId() { return 'p'+Date.now()+Math.random().toString(36).slice(2,6); }
-
-  /* ===== Gun 同步 ===== */
-  function pushState() {
-    // 每次保存完整的 state
-    const save = {
-      people: state.people.map(p => ({ id: p.id, name: p.name, color: p.color, leave: p.leave ? p.leave.slice() : [] })),
-      year: state.year,
-      month: state.month,
-    };
-    dataNode.put(save);
+  // ===== 存储 =====
+  function loadData(){
+    try{
+      var raw=localStorage.getItem(KEY);
+      if(raw){var d=JSON.parse(raw);if(d.people){for(var p of d.people)if(!p.leave)p.leave=[];return d}}
+    }catch(e){}
+    return {people:[],year:2026,month:5};
+  }
+  function saveData(){
+    try{localStorage.setItem(KEY,JSON.stringify({people:data.people,year:data.year,month:data.month}))}catch(e){}
   }
 
-  function onState(data) {
-    if (!data || !data.people) return;
-    const msg = data;
-
-    // 检查是否有新增/修改
-    let changed = false;
-
-    // 同步 people
-    for (const sp of msg.people) {
-      if (!sp.leave) sp.leave = [];
-      const existing = state.people.find(p => p.id === sp.id);
-      if (!existing) {
-        state.people.push(sp);
-        changed = true;
-      } else if (JSON.stringify(existing) !== JSON.stringify(sp)) {
-        Object.assign(existing, sp);
-        changed = true;
-      }
-    }
-
-    // 检查删除
-    for (let i = state.people.length - 1; i >= 0; i--) {
-      if (!msg.people.find(p => p.id === state.people[i].id)) {
-        state.people.splice(i, 1);
-        if (activeId && !state.people.find(p => p.id === activeId)) {
-          activeId = state.people.length > 0 ? state.people[0].id : null;
-          localStorage.setItem('liangjian_active', activeId || '');
-        }
-        changed = true;
-      }
-    }
-
-    if (msg.year !== undefined) state.year = msg.year;
-    if (msg.month !== undefined) state.month = msg.month;
-
-    if (!synced) {
-      synced = true;
-      dom.statusDot.className = 'dot green';
-      dom.statusText.textContent = '已同步';
-    }
-
-    if (changed || !synced) render();
-    render();
+  // ===== 操作 =====
+  function addPerson(name){
+    name=(name||'').trim();
+    if(!name||data.people.length>=50)return;
+    data.people.push({id:genId(),name:name,color:COLORS[data.people.length%COLORS.length],leave:[]});
+    activeId=data.people[data.people.length-1].id;
+    localStorage.setItem(KEY+'_active',activeId);
+    saveData();render();
+    dom.personInput.value='';dom.personInput.focus();
   }
-
-  // 监听 Gun 数据变化
-  dataNode.on(onState);
-
-  // 定时推送自己的状态（让 Gun 知道我们还活着）
-  setInterval(() => {
-    if (synced) {
-      pushState();
-    }
-  }, 3000);
-
-  // 首次推送
-  setTimeout(pushState, 500);
-
-  /* ===== 操作 ===== */
-  function addPerson(name) {
-    name = (name || '').trim();
-    if (!name || state.people.length >= 50) return;
-    const color = COLORS[state.people.length % COLORS.length];
-    const id = genId();
-    state.people.push({ id, name, color, leave: [] });
-    activeId = id;
-    localStorage.setItem('liangjian_active', id);
-    pushState();
-    dom.personInput.value = '';
-    dom.personInput.focus();
-    render();
+  function removePerson(id){
+    data.people=data.people.filter(p=>p.id!==id);
+    if(activeId===id){activeId=data.people.length?data.people[0].id:null;localStorage.setItem(KEY+'_active',activeId||'')}
+    saveData();render();
   }
-
-  function removePerson(id) {
-    state.people = state.people.filter(p => p.id !== id);
-    if (activeId === id) {
-      activeId = state.people.length > 0 ? state.people[0].id : null;
-      localStorage.setItem('liangjian_active', activeId || '');
-    }
-    pushState();
-    render();
-  }
-
-  function toggleLeave(pid, dateStr) {
-    const p = gp(pid);
-    if (!p) return;
-    if (!p.leave) p.leave = [];
-    const idx = p.leave.indexOf(dateStr);
-    if (idx >= 0) {
-      p.leave.splice(idx, 1);
-    } else {
-      const parts = dateStr.split('-').map(Number);
-      if (isMon(parts[0], parts[1]-1, parts[2]) || isPast(parts[0], parts[1]-1, parts[2]) || cod(dateStr) >= 3) return;
+  function toggleLeave(pid,dateStr){
+    var p=gp(pid);if(!p)return;
+    if(!p.leave)p.leave=[];
+    var idx=p.leave.indexOf(dateStr);
+    if(idx>=0){p.leave.splice(idx,1)}
+    else{
+      var parts=dateStr.split('-').map(Number);
+      if(isMon(parts[0],parts[1]-1,parts[2])||isPast(parts[0],parts[1]-1,parts[2])||cod(dateStr)>=3)return;
       p.leave.push(dateStr);
     }
-    pushState();
-    render();
+    saveData();render();
+    // 同步到其他同电脑的标签页
+    try{new BroadcastChannel(KEY).postMessage(JSON.stringify(data))}catch(e){}
   }
 
-  function setMonth(y, m) {
-    state.year = y;
-    state.month = m;
-    pushState();
-    render();
+  // ===== 分享 =====
+  function exportData(){
+    var shareDialog=dom.shareDialog;
+    dom.shareTitle.textContent='📤 分享数据';
+    dom.shareDesc.textContent='复制下面的内容，发给同事。对方打开页面点「导入」粘贴即可同步';
+    dom.shareText.value=JSON.stringify(data);
+    dom.shareText.readOnly=true;
+    shareDialog.classList.add('open');
+    dom.shareCopy.onclick=function(){
+      dom.shareText.select();
+      try{navigator.clipboard.writeText(dom.shareText.value).then(function(){
+        dom.shareCopy.textContent='✅ 已复制';setTimeout(function(){dom.shareCopy.textContent='📋 复制'},2000);
+      }).catch(function(){document.execCommand('copy');showToast('✅ 已复制')})}catch(e){document.execCommand('copy');showToast('✅ 已复制')}
+    };
+    dom.shareCancel.onclick=function(){shareDialog.classList.remove('open')};
   }
 
-  /* ===== 渲染 ===== */
-  function render() {
-    const py = state.people || [];
+  function importData(){
+    var shareDialog=dom.shareDialog;
+    dom.shareTitle.textContent='📥 导入数据';
+    dom.shareDesc.textContent='粘贴同事分享的数据，覆盖当前内容';
+    dom.shareText.value='';
+    dom.shareText.readOnly=false;
+    shareDialog.classList.add('open');
+    dom.shareCopy.textContent='✅ 导入';
+    dom.shareCopy.onclick=function(){
+      try{
+        var d=JSON.parse(dom.shareText.value);
+        if(!d.people||!Array.isArray(d.people)){showToast('❌ 数据格式不对');return}
+        data.people=d.people;data.year=d.year||2026;data.month=d.month!==undefined?d.month:5;
+        for(var p of data.people)if(!p.leave)p.leave=[];
+        activeId=null;localStorage.setItem(KEY+'_active','');
+        saveData();render();
+        shareDialog.classList.remove('open');
+        showToast('✅ 导入成功！共 '+data.people.length+' 人');
+      }catch(e){showToast('❌ 数据格式不对，请检查')}
+    };
+    dom.shareCancel.onclick=function(){shareDialog.classList.remove('open')};
+    setTimeout(function(){dom.shareText.focus()},200);
+  }
 
-    // 成员条
-    dom.peopleCount.textContent = py.length + ' 人';
-    if (py.length === 0) {
-      dom.peopleBar.innerHTML = '<div class="empty-bar">暂无成员，展开右侧添加</div>';
-    } else {
-      let h = '';
-      for (const p of py) {
-        const act = p.id === activeId ? ' active' : '';
-        h += `<div class="person-chip${act}" data-id="${p.id}" style="--pc:${p.color}">`;
-        h += `<span class="cd" style="background:${p.color}"></span>`;
-        h += `<span class="cn">${esc(p.name)}</span>`;
-        h += `<span class="cdays">${(p.leave||[]).length}</span>`;
-        h += `<span class="cdel" data-id="${p.id}">✕</span></div>`;
+  // ===== 提示 =====
+  var tipTimer=null;
+  function showTip(el,msg){
+    dom.tooltip.textContent=msg;dom.tooltip.style.display='block';
+    var r=el.getBoundingClientRect();
+    dom.tooltip.style.left=(r.left+r.width/2)+'px';dom.tooltip.style.top=(r.top-10)+'px';
+    dom.tooltip.style.transform='translate(-50%,-100%)';
+    clearTimeout(tipTimer);tipTimer=setTimeout(function(){dom.tooltip.style.display='none'},1800);
+  }
+  var toastTimer=null;
+  function showToast(msg){
+    dom.toast.textContent=msg;dom.toast.style.display='block';
+    clearTimeout(toastTimer);toastTimer=setTimeout(function(){dom.toast.style.display='none'},2500);
+  }
+
+  // ===== 同机多标签同步 =====
+  try{
+    var bc=new BroadcastChannel(KEY);
+    bc.onmessage=function(e){
+      try{
+        var d=JSON.parse(e.data);
+        if(d.people){data.people=d.people;for(var p of data.people)if(!p.leave)p.leave=[];data.year=d.year||2026;data.month=d.month!==undefined?d.month:5;render()}
+      }catch(e){}
+    };
+  }catch(e){}
+
+  // ===== 渲染 =====
+  function render(){
+    var py=data.people||[];
+    dom.peopleCount.textContent=py.length+' 人';
+    if(py.length===0){
+      dom.peopleBar.innerHTML='<div class="empty-bar">暂无成员，展开右侧添加</div>';
+    }else{
+      var h='';
+      for(var p of py){
+        var act=p.id===activeId?' active':'';
+        h+='<div class="person-chip'+act+'" data-id="'+p.id+'" style="--pc:'+p.color+'">';
+        h+='<span class="cd" style="background:'+p.color+'"></span>';
+        h+='<span class="cn">'+esc(p.name)+'</span>';
+        h+='<span class="cdays">'+(p.leave||[]).length+'</span>';
+        h+='<span class="cdel" data-id="'+p.id+'">✕</span></div>';
       }
-      dom.peopleBar.innerHTML = h;
-
-      dom.peopleBar.querySelectorAll('.person-chip').forEach(el => {
-        el.onclick = function(e) {
-          if (e.target.classList.contains('cdel')) return;
-          activeId = this.dataset.id;
-          localStorage.setItem('liangjian_active', activeId);
-          render();
+      dom.peopleBar.innerHTML=h;
+      dom.peopleBar.querySelectorAll('.person-chip').forEach(function(el){
+        el.onclick=function(e){
+          if(e.target.classList.contains('cdel'))return;
+          activeId=this.dataset.id;localStorage.setItem(KEY+'_active',activeId);render();
         };
       });
-      dom.peopleBar.querySelectorAll('.cdel').forEach(el => {
-        el.onclick = function(e) {
-          e.stopPropagation();
-          const id = this.dataset.id;
-          const p = gp(id);
-          if (p && confirm(`移除此成员？`)) removePerson(id);
-        };
+      dom.peopleBar.querySelectorAll('.cdel').forEach(function(el){
+        el.onclick=function(e){e.stopPropagation();var id=this.dataset.id;var p=gp(id);if(p&&confirm('移除此成员？'))removePerson(id)};
       });
     }
 
-    // 日历
-    const y = state.year, m = state.month;
-    const days = dim(y, m);
-    const first = new Date(y, m, 1).getDay();
-    const sc = first === 0 ? 6 : first - 1;
-    dom.monthTitle.textContent = y + ' 年 ' + (m + 1) + ' 月';
-    const rows = Math.ceil((sc + days) / 7);
-    let chtml = '';
-
-    for (let r = 0; r < rows; r++) {
-      chtml += '<tr>';
-      for (let c = 0; c < 7; c++) {
-        const d = r * 7 + c - sc + 1;
-        if (d < 1 || d > days) {
-          chtml += '<td class="other-month"><div class="day-cell"><div class="date-num"> </div></div></td>';
-          continue;
-        }
-        const dateStr = ds(y, m, d);
-        const mon = isMon(y, m, d);
-        const past = isPast(y, m, d);
-        const ac = ga();
-        const ols = pod(dateStr);
-        const cnt = ols.length;
-        let meOn = false;
-        if (ac && ac.leave) { for (const k of ac.leave) { if (k === dateStr) { meOn = true; break; } } }
-
-        let cls = 'day-cell';
-        if (mon) cls += ' monday';
-        else if (past) cls += ' past';
-        else if (ac) cls += ' clickable';
-
-        let nhtml = '';
-        for (let k = 0; k < ols.length && k < 3; k++) {
-          nhtml += `<span class="name-tag" style="background:${ols[k].color}">${esc(ols[k].name)}</span>`;
-        }
-        if (ols.length > 3) nhtml += `<span class="name-tag overflow">+${ols.length-3}</span>`;
-
-        const badge = mon ? '' : `<span class="count-badge${cnt>=3?' full':''}">${cnt}/3</span>`;
-        const dot = meOn ? `<div class="active-dot" style="background:${ac.color}"></div>` : '';
-        const mtxt = mon ? '<div class="monday-badge">🚫 禁休</div>' : '';
-
-        chtml += `<td data-date="${dateStr}"><div class="${cls}">`;
-        chtml += `<div class="date-num">${d}</div>`;
-        chtml += mtxt + `<div class="names-wrap">${nhtml}</div>`;
-        chtml += badge + dot + '</div></td>';
+    var y=data.year,m=data.month;
+    var days=dim(y,m),first=new Date(y,m,1).getDay(),sc=first===0?6:first-1;
+    dom.monthTitle.textContent=y+' 年 '+(m+1)+' 月';
+    var rows=Math.ceil((sc+days)/7),chtml='';
+    for(var r=0;r<rows;r++){
+      chtml+='<tr>';
+      for(var c=0;c<7;c++){
+        var d=r*7+c-sc+1;
+        if(d<1||d>days){chtml+='<td class="other-month"><div class="day-cell"><div class="date-num"> </div></div></td>';continue}
+        var dateStr=ds(y,m,d),mon=isMon(y,m,d),past=isPast(y,m,d),ac=ga(),ols=pod(dateStr),cnt=ols.length;
+        var meOn=false;if(ac&&ac.leave){for(var k of ac.leave){if(k===dateStr){meOn=true;break}}}
+        var cls='day-cell';if(mon)cls+=' monday';else if(past)cls+=' past';else if(ac)cls+=' clickable';
+        var nhtml='';
+        for(var k=0;k<ols.length&&k<3;k++)nhtml+='<span class="name-tag" style="background:'+ols[k].color+'">'+esc(ols[k].name)+'</span>';
+        if(ols.length>3)nhtml+='<span class="name-tag overflow">+'+(ols.length-3)+'</span>';
+        var badge=mon?'':'<span class="count-badge'+(cnt>=3?' full':'')+'">'+cnt+'/3</span>';
+        var dot=meOn?'<div class="active-dot" style="background:'+ac.color+'"></div>':'';
+        var mtxt=mon?'<div class="monday-badge">🚫 禁休</div>':'';
+        chtml+='<td data-date="'+dateStr+'"><div class="'+cls+'"><div class="date-num">'+d+'</div>'+mtxt+'<div class="names-wrap">'+nhtml+'</div>'+badge+dot+'</div></td>';
       }
-      chtml += '</tr>';
+      chtml+='</tr>';
     }
-    dom.calendarBody.innerHTML = chtml;
-
-    dom.calendarBody.querySelectorAll('td[data-date]').forEach(td => {
-      td.onclick = function() {
-        const dateStr = this.dataset.date;
-        const ac = ga();
-        if (!ac) { showTip(this, '请先点选成员'); return; }
-        const parts = dateStr.split('-').map(Number);
-        if (isMon(parts[0], parts[1]-1, parts[2])) { showTip(this, '周一禁休'); return; }
-        if (isPast(parts[0], parts[1]-1, parts[2])) { showTip(this, '已过日期不可修改'); return; }
-        let isMine = false;
-        if (ac.leave) { for (const k of ac.leave) { if (k === dateStr) { isMine = true; break; } } }
-        if (!isMine && cod(dateStr) >= 3) { showTip(this, '已达上限 3 人'); return; }
-        toggleLeave(ac.id, dateStr);
+    dom.calendarBody.innerHTML=chtml;
+    dom.calendarBody.querySelectorAll('td[data-date]').forEach(function(td){
+      td.onclick=function(){
+        var dateStr=this.dataset.date,ac=ga();
+        if(!ac){showTip(this,'请先点选成员');return}
+        var parts=dateStr.split('-').map(Number);
+        if(isMon(parts[0],parts[1]-1,parts[2])){showTip(this,'周一禁休');return}
+        if(isPast(parts[0],parts[1]-1,parts[2])){showTip(this,'已过日期不可修改');return}
+        var isMine=false;if(ac.leave){for(var k of ac.leave){if(k===dateStr){isMine=true;break}}}
+        if(!isMine&&cod(dateStr)>=3){showTip(this,'已达上限 3 人');return}
+        toggleLeave(ac.id,dateStr);
       };
     });
-
-    const ac2 = ga();
-    if (ac2) dom.calendarHint.innerHTML = `当前：<strong>${esc(ac2.name)}</strong> — 点击日期安排/取消（已休${(ac2.leave||[]).length}天）`;
-    else if (py.length > 0) dom.calendarHint.innerHTML = '请点击下方成员选中后，再点日期安排调休';
-    else dom.calendarHint.innerHTML = '展开「+ 添加成员」录入成员';
+    var ac2=ga();
+    if(ac2)dom.calendarHint.innerHTML='当前：<strong>'+esc(ac2.name)+'</strong> — 点击日期安排/取消（已休'+(ac2.leave||[]).length+'天）';
+    else if(py.length>0)dom.calendarHint.innerHTML='请点击下方成员选中后，再点日期安排调休';
+    else dom.calendarHint.innerHTML='展开「+ 添加成员」录入成员';
   }
 
-  let tipTimer = null;
-  function showTip(el, msg) {
-    dom.tooltip.textContent = msg;
-    dom.tooltip.style.display = 'block';
-    const r = el.getBoundingClientRect();
-    dom.tooltip.style.left = (r.left + r.width/2) + 'px';
-    dom.tooltip.style.top = (r.top - 10) + 'px';
-    dom.tooltip.style.transform = 'translate(-50%, -100%)';
-    clearTimeout(tipTimer);
-    tipTimer = setTimeout(() => dom.tooltip.style.display = 'none', 1800);
-  }
+  // ===== 事件 =====
+  dom.addBtn.onclick=function(){addPerson(dom.personInput.value)};
+  dom.personInput.onkeydown=function(e){if(e.key==='Enter')addPerson(dom.personInput.value)};
+  var co=false;
+  dom.collapseToggle.onclick=function(){co=!co;dom.collapseBody.className='collapse-body'+(co?' open':'');dom.collapseArrow.className='arrow'+(co?' open':'')};
+  dom.prevBtn.onclick=function(){var y=data.year,m=data.month-1;if(m<0){m=11;y--}data.year=y;data.month=m;saveData();render()};
+  dom.nextBtn.onclick=function(){var y=data.year,m=data.month+1;if(m>11){m=0;y++}data.year=y;data.month=m;saveData();render()};
+  dom.todayBtn.onclick=function(){var t=new Date();data.year=t.getFullYear();data.month=t.getMonth();saveData();render()};
+  dom.exportBtn.onclick=exportData;
+  dom.importBtn.onclick=importData;
+  document.onkeydown=function(e){if(e.target.tagName==='INPUT')return;if(e.key==='ArrowLeft')dom.prevBtn.onclick();if(e.key==='ArrowRight')dom.nextBtn.onclick()};
+  // 点弹窗外关闭
+  dom.shareDialog.onclick=function(e){if(e.target===this)this.classList.remove('open')};
 
-  /* ===== 事件绑定 ===== */
-  dom.addBtn.onclick = () => addPerson(dom.personInput.value);
-  dom.personInput.onkeydown = e => { if (e.key === 'Enter') addPerson(dom.personInput.value); };
-
-  let co = false;
-  dom.collapseToggle.onclick = () => {
-    co = !co;
-    dom.collapseBody.className = 'collapse-body' + (co ? ' open' : '');
-    dom.collapseArrow.className = 'arrow' + (co ? ' open' : '');
-  };
-
-  dom.prevBtn.onclick = () => { let y=state.year,m=state.month-1; if(m<0){m=11;y--;} setMonth(y,m); };
-  dom.nextBtn.onclick = () => { let y=state.year,m=state.month+1; if(m>11){m=0;y++;} setMonth(y,m); };
-  dom.todayBtn.onclick = () => { const t=new Date(); setMonth(t.getFullYear(), t.getMonth()); };
-  document.onkeydown = e => {
-    if (e.target.tagName === 'INPUT') return;
-    if (e.key === 'ArrowLeft') dom.prevBtn.onclick();
-    if (e.key === 'ArrowRight') dom.nextBtn.onclick();
-  };
+  render();
 })();
 </script>
 </body>
